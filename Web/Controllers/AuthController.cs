@@ -24,7 +24,7 @@ public sealed class AuthController : ControllerBase
         AuthResponseDto? result = await _authService.RegisterAsync(request, cancellationToken);
         if (result == null)
         {
-            return Conflict();
+            return Conflict(new { message = "Não foi possível concluir o cadastro. E-mail ou username já está em uso." });
         }
 
         return Ok(result);
@@ -37,7 +37,7 @@ public sealed class AuthController : ControllerBase
         AuthResponseDto? result = await _authService.LoginAsync(request, cancellationToken);
         if (result == null)
         {
-            return Unauthorized();
+            return Unauthorized(new { message = "E-mail ou senha inválidos." });
         }
 
         return Ok(result);

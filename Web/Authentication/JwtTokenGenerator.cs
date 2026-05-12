@@ -23,12 +23,12 @@ public sealed class JwtTokenGenerator : IJwtTokenGenerator
             || string.IsNullOrWhiteSpace(_options.Audience)
             || string.IsNullOrWhiteSpace(_options.SigningKey))
         {
-            throw new InvalidOperationException("Jwt configuration is incomplete.");
+            throw new InvalidOperationException("A configuração de JWT está incompleta.");
         }
 
         if (_options.SigningKey.Length < 32)
         {
-            throw new InvalidOperationException("Jwt signing key must be at least 32 characters.");
+            throw new InvalidOperationException("A chave de assinatura do JWT deve ter no mínimo 32 caracteres.");
         }
 
         byte[] keyBytes = Encoding.UTF8.GetBytes(_options.SigningKey);

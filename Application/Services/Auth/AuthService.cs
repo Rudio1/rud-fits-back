@@ -66,7 +66,9 @@ public sealed class AuthService : IAuthService
         return new AuthResponseDto
         {
             AccessToken = token,
-            ExpiresAtUtc = expiresAtUtc
+            ExpiresAtUtc = expiresAtUtc,
+            IsFirstAccess = true,
+            Username = user.Username
         };
     }
 
@@ -104,6 +106,7 @@ public sealed class AuthService : IAuthService
             return null;
         }
 
+        bool isFirstAccess = account.IsFirstAccess;
         DateTime utcNow = DateTime.UtcNow;
         await _authRepository.UpdateAccountLastLoginAsync(account.Id, utcNow, cancellationToken);
 
@@ -113,7 +116,9 @@ public sealed class AuthService : IAuthService
         return new AuthResponseDto
         {
             AccessToken = token,
-            ExpiresAtUtc = expiresAtUtc
+            ExpiresAtUtc = expiresAtUtc,
+            IsFirstAccess = isFirstAccess,
+            Username = user.Username
         };
     }
 }

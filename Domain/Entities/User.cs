@@ -31,6 +31,8 @@ public sealed class User : BaseEntity
 
     public Account? Account { get; private set; }
 
+    public UserProfile? UserProfile { get; private set; }
+
     public void SetProfileImageUrl(string? url)
     {
         ProfileImageUrl = url;

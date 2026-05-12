@@ -9,9 +9,12 @@ public sealed class LoginRequestValidator : AbstractValidator<LoginRequest>
     {
         RuleFor(x => x.Email)
             .NotEmpty()
-            .EmailAddress();
+            .WithMessage("E-mail é obrigatório.")
+            .EmailAddress()
+            .WithMessage("Informe um e-mail válido.");
 
         RuleFor(x => x.Password)
-            .NotEmpty();
+            .NotEmpty()
+            .WithMessage("Senha é obrigatória.");
     }
 }

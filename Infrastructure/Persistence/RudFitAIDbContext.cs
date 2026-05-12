@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Options;
+using RudFitAI.Application.Options;
+using RudFitAI.Application.Time;
 using RudFitAI.Domain.Common;
 using RudFitAI.Domain.Entities;
 
@@ -8,14 +11,27 @@ namespace RudFitAI.Infrastructure.Persistence;
 
 public sealed class RudFitAIDbContext : DbContext
 {
-    public RudFitAIDbContext(DbContextOptions<RudFitAIDbContext> options)
+    private readonly PersistenceOptions _persistenceOptions;
+
+    public RudFitAIDbContext(
+        DbContextOptions<RudFitAIDbContext> options,
+        IOptions<PersistenceOptions> persistenceOptions)
         : base(options)
     {
+        _persistenceOptions = persistenceOptions.Value;
     }
 
     public DbSet<User> Users => Set<User>();
 
     public DbSet<Account> Accounts => Set<Account>();
+
+    public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
+
+    public DbSet<Food> Foods => Set<Food>();
+
+    public DbSet<MealLog> MealLogs => Set<MealLog>();
+
+    public DbSet<MealLogItem> MealLogItems => Set<MealLogItem>();
 
     public override int SaveChanges()
     {
@@ -56,17 +72,17 @@ public sealed class RudFitAIDbContext : DbContext
 
     private void ApplyAuditTimestamps()
     {
-        DateTime utcNow = DateTime.UtcNow;
+        DateTime auditNow = PersistenceClock.GetWallClockNow(_persistenceOptions);
         foreach (EntityEntry<BaseEntity> entry in ChangeTracker.Entries<BaseEntity>())
         {
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Property(nameof(BaseEntity.CreatedAt)).CurrentValue = utcNow;
-                    entry.Property(nameof(BaseEntity.UpdatedAt)).CurrentValue = utcNow;
+                    entry.Property(nameof(BaseEntity.CreatedAt)).CurrentValue = auditNow;
+                    entry.Property(nameof(BaseEntity.UpdatedAt)).CurrentValue = auditNow;
                     break;
                 case EntityState.Modified:
-                    entry.Property(nameof(BaseEntity.UpdatedAt)).CurrentValue = utcNow;
+                    entry.Property(nameof(BaseEntity.UpdatedAt)).CurrentValue = auditNow;
                     entry.Property(nameof(BaseEntity.CreatedAt)).IsModified = false;
                     break;
                 case EntityState.Detached:

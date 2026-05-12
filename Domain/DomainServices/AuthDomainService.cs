@@ -23,17 +23,17 @@ public sealed partial class AuthDomainService
     {
         if (string.IsNullOrWhiteSpace(normalizedEmail))
         {
-            throw new ArgumentException("Email is required.", nameof(normalizedEmail));
+            throw new ArgumentException("E-mail é obrigatório.", nameof(normalizedEmail));
         }
 
         if (!EmailRegex().IsMatch(normalizedEmail))
         {
-            throw new ArgumentException("Email format is invalid.", nameof(normalizedEmail));
+            throw new ArgumentException("O formato do e-mail é inválido.", nameof(normalizedEmail));
         }
 
         if (string.IsNullOrEmpty(password) || password.Length < 8)
         {
-            throw new ArgumentException("Password must be at least 8 characters.", nameof(password));
+            throw new ArgumentException("A senha deve ter no mínimo 8 caracteres.", nameof(password));
         }
     }
 
@@ -45,12 +45,12 @@ public sealed partial class AuthDomainService
     {
         if (string.IsNullOrWhiteSpace(fullName))
         {
-            throw new ArgumentException("Full name is required.", nameof(fullName));
+            throw new ArgumentException("Nome completo é obrigatório.", nameof(fullName));
         }
 
         if (fullName.Length > 120)
         {
-            throw new ArgumentException("Full name must be at most 120 characters.", nameof(fullName));
+            throw new ArgumentException("Nome completo deve ter no máximo 120 caracteres.", nameof(fullName));
         }
 
         EnsureEmailAndPassword(normalizedEmail, password);
@@ -59,13 +59,13 @@ public sealed partial class AuthDomainService
         {
             if (normalizedUsername.Length < 3 || normalizedUsername.Length > 50)
             {
-                throw new ArgumentException("Username must be between 3 and 50 characters.", nameof(normalizedUsername));
+                throw new ArgumentException("Username deve ter entre 3 e 50 caracteres.", nameof(normalizedUsername));
             }
 
             if (!UsernameRegex().IsMatch(normalizedUsername))
             {
                 throw new ArgumentException(
-                    "Username may only contain lowercase letters, numbers, and underscores.",
+                    "Username pode conter apenas letras minúsculas, números e underscore.",
                     nameof(normalizedUsername));
             }
         }

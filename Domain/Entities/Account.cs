@@ -18,6 +18,7 @@ public sealed class Account : BaseEntity
         EmailVerified = false;
         LoginProvider = loginProvider;
         IsTwoFactorEnabled = false;
+        IsFirstAccess = true;
     }
 
     public Guid UserId { get; private set; }
@@ -36,11 +37,18 @@ public sealed class Account : BaseEntity
 
     public bool IsTwoFactorEnabled { get; private set; }
 
+    public bool IsFirstAccess { get; private set; }
+
     public User User { get; private set; } = null!;
 
     public void RecordLogin(DateTime utcNow)
     {
         LastLoginAt = utcNow;
+    }
+
+    public void CompleteFirstAccess()
+    {
+        IsFirstAccess = false;
     }
 
     public void UpdatePasswordHash(string passwordHash)
