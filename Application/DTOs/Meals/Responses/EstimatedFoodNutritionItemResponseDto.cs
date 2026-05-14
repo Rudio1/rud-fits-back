@@ -10,6 +10,8 @@ public sealed class EstimatedFoodNutritionItemResponseDto
 
     public decimal CaloriesKcal { get; init; }
 
+    public decimal ProteinGrams { get; init; }
+
     public decimal CarbohydratesGrams { get; init; }
 
     public decimal FatGrams { get; init; }

@@ -50,3 +50,8 @@ package.json
 
 /.cursor
 /database
+/Web/appsettings.json
+/Web/appsettings.Development.json
+/temp-build
+/Infrastructure/Persistence/Migrations
+\Infrastructure\Persistence\Migrations

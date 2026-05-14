@@ -35,6 +35,9 @@ namespace RudFitAI.Infrastructure.Persistence.Migrations
                     b.Property<bool>("EmailVerified")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsFirstAccess")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsTwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -67,6 +70,196 @@ namespace RudFitAI.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Accounts", (string)null);
+                });
+
+            modelBuilder.Entity("RudFitAI.Domain.Entities.Food", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("BaseQuantity")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("Calories")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Carbs")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<decimal>("Fat")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<decimal>("Protein")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("SourceCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("SourceType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UnitType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Foods_Ai_NormalizedName_Active")
+                        .HasFilter("[SourceType] = 4 AND [IsActive] = 1");
+
+                    b.HasIndex("SourceType", "SourceCode")
+                        .IsUnique()
+                        .HasFilter("[SourceCode] IS NOT NULL");
+
+                    b.ToTable("Foods", (string)null);
+                });
+
+            modelBuilder.Entity("RudFitAI.Domain.Entities.MealLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ConsumedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MealType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("SourceType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalCalories")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalCarbs")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("TotalFat")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("TotalProtein")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "ConsumedAt");
+
+                    b.ToTable("MealLogs", (string)null);
+                });
+
+            modelBuilder.Entity("RudFitAI.Domain.Entities.MealLogItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Calories")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Carbs")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Fat")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<Guid>("FoodId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FoodName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("MealLogId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Protein")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("UnitType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FoodId");
+
+                    b.HasIndex("MealLogId");
+
+                    b.ToTable("MealLogItems", (string)null);
                 });
 
             modelBuilder.Entity("RudFitAI.Domain.Entities.User", b =>
@@ -116,6 +309,73 @@ namespace RudFitAI.Infrastructure.Persistence.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
+            modelBuilder.Entity("RudFitAI.Domain.Entities.UserProfile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("ActivityLevel")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<int?>("DailyCaloriesGoal")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DailyCarbsGoal")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DailyFatGoal")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DailyProteinGoal")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DailyRoutineLevel")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Goal")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GoalIntensity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Height")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal?>("StartingWeight")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal?>("TargetWeight")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal?>("Weight")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserProfiles", (string)null);
+                });
+
             modelBuilder.Entity("RudFitAI.Domain.Entities.Account", b =>
                 {
                     b.HasOne("RudFitAI.Domain.Entities.User", "User")
@@ -127,9 +387,57 @@ namespace RudFitAI.Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("RudFitAI.Domain.Entities.MealLog", b =>
+                {
+                    b.HasOne("RudFitAI.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RudFitAI.Domain.Entities.MealLogItem", b =>
+                {
+                    b.HasOne("RudFitAI.Domain.Entities.Food", "Food")
+                        .WithMany()
+                        .HasForeignKey("FoodId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RudFitAI.Domain.Entities.MealLog", "MealLog")
+                        .WithMany("Items")
+                        .HasForeignKey("MealLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Food");
+
+                    b.Navigation("MealLog");
+                });
+
+            modelBuilder.Entity("RudFitAI.Domain.Entities.UserProfile", b =>
+                {
+                    b.HasOne("RudFitAI.Domain.Entities.User", "User")
+                        .WithOne("UserProfile")
+                        .HasForeignKey("RudFitAI.Domain.Entities.UserProfile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RudFitAI.Domain.Entities.MealLog", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("RudFitAI.Domain.Entities.User", b =>
                 {
                     b.Navigation("Account");
+
+                    b.Navigation("UserProfile");
                 });
 #pragma warning restore 612, 618
         }

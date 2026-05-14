@@ -11,6 +11,8 @@ namespace RudFitAI.Application.Services.Meals;
 
 public sealed class MealPhotoAnalysisService : IMealPhotoAnalysisService
 {
+    private static readonly CultureInfo PtBrCulture = CultureInfo.GetCultureInfo("pt-BR");
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
@@ -67,7 +69,7 @@ public sealed class MealPhotoAnalysisService : IMealPhotoAnalysisService
             items.Add(
                 new MealPhotoAnalysisFoodItemDto
                 {
-                    Name = item.Name.Trim(),
+                    Name = FormatFoodDisplayName(item.Name),
                     EstimatedQuantityGrams = grams
                 });
         }
@@ -78,6 +80,17 @@ public sealed class MealPhotoAnalysisService : IMealPhotoAnalysisService
         }
 
         return new MealPhotoAnalysisResponseDto { Foods = items };
+    }
+
+    private static string FormatFoodDisplayName(string name)
+    {
+        string trimmed = name.Trim();
+        if (trimmed.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        return PtBrCulture.TextInfo.ToTitleCase(trimmed.ToLower(PtBrCulture));
     }
 
     private static string ExtractJsonPayload(string assistantContent)

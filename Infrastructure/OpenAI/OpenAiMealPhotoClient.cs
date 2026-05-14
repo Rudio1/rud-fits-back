@@ -10,27 +10,39 @@ namespace RudFitAI.Infrastructure.OpenAI;
 public sealed class OpenAiMealPhotoClient : IMealPhotoVisionClient
 {
     private const string UserPrompt = """
-        Analise esta refeição e retorne apenas JSON válido.
+    Analise a imagem da refeição e retorne apenas JSON válido.
 
-        Objetivo:
-        Identificar alimentos presentes no prato e estimar quantidade aproximada.
+    Objetivo:
+    Identificar os alimentos presentes no prato e estimar a quantidade aproximada em gramas.
 
-        Idioma:
-        - Todos os nomes de alimentos no campo "name" DEVEM estar em português do Brasil (pt-BR).
-        - Use o nome popular brasileiro do alimento (ex.: "ovo", "arroz", "feijão", "frango grelhado", "batata frita", "pão francês").
-        - NUNCA retorne nomes em inglês ou em outro idioma. Se reconhecer um termo em inglês, traduza para pt-BR antes de responder.
-        - Use letras minúsculas, com acentuação correta. Sem aspas extras, sem tradução literal entre parênteses.
+    Regras:
+    - Retorne SOMENTE JSON válido.
+    - Não escreva explicações.
+    - Não use markdown.
+    - Não use texto antes ou depois do JSON.
 
-        Formato (somente JSON, sem texto antes ou depois):
+    Idioma:
+    - Todos os nomes dos alimentos devem estar em português do Brasil (pt-BR).
+    - Utilize nomes populares e naturais.
+    - Nunca retorne nomes em inglês.
+    - Não traduza literalmente nomes incomuns.
+    - Use capitalização natural para exibição.
+
+    Estimativa:
+    - A quantidade deve ser estimada em gramas.
+    - Use valores numéricos inteiros.
+    - Considere apenas alimentos visíveis na imagem.
+
+    Formato esperado:
+    {
+    "foods": [
         {
-          "foods": [
-            {
-              "name": "string em português do Brasil",
-              "estimatedQuantityGrams": number
-            }
-          ]
+        "name": "string",
+        "estimatedQuantityGrams": 0
         }
-        """;
+    ]
+    }
+    """;
 
     private readonly HttpClient _httpClient;
     private readonly OpenAiOptions _options;

@@ -41,10 +41,17 @@ public sealed class MealLogItemConfiguration : IEntityTypeConfiguration<MealLogI
             .HasColumnType("decimal(10,2)")
             .IsRequired();
 
+        builder.Property(mealLogItem => mealLogItem.IsDeleted)
+            .IsRequired();
+
+        builder.Property(mealLogItem => mealLogItem.DeletedAt);
+
         builder.HasOne(mealLogItem => mealLogItem.Food)
             .WithMany()
             .HasForeignKey(mealLogItem => mealLogItem.FoodId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasQueryFilter(mealLogItem => !mealLogItem.IsDeleted);
 
         builder.HasIndex(mealLogItem => mealLogItem.MealLogId);
         builder.HasIndex(mealLogItem => mealLogItem.FoodId);

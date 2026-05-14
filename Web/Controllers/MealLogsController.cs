@@ -53,10 +53,8 @@ public sealed class MealLogsController : ControllerBase
     /// <summary>
     /// Lista refeições do usuário na data civil informada (mesmo critério dos horários gravados no banco).
     /// Query obrigatória: <c>date=YYYY-MM-DD</c>.
-    /// Rotas equivalentes: <c>GET /api/meal-logs?date=...</c> e <c>GET /api/meal-logs/by-date?date=...</c>.
     /// </summary>
     [HttpGet]
-    [HttpGet("by-date")]
     public async Task<ActionResult<IReadOnlyCollection<MealLogResponseDto>>> ListByDate(
         [FromQuery] DateOnly? date,
         CancellationToken cancellationToken)
@@ -73,6 +71,27 @@ public sealed class MealLogsController : ControllerBase
 
         IReadOnlyCollection<MealLogResponseDto> response =
             await _mealLogService.ListByDateAsync(userId, date.Value, cancellationToken);
+
+        return Ok(response);
+    }
+
+    [HttpGet("daily-summary")]
+    public async Task<ActionResult<DailyMealConsumptionSummaryResponseDto>> GetDailySummary(
+        [FromQuery] DateOnly? date,
+        CancellationToken cancellationToken)
+    {
+        if (!TryGetUserId(out Guid userId))
+        {
+            return Unauthorized(new { message = "Usuário não autenticado." });
+        }
+
+        if (date is null)
+        {
+            return BadRequest(new { message = "Informe a data no formato YYYY-MM-DD." });
+        }
+
+        DailyMealConsumptionSummaryResponseDto response =
+            await _mealLogService.GetDailyConsumptionSummaryAsync(userId, date.Value, cancellationToken);
 
         return Ok(response);
     }
@@ -170,6 +189,54 @@ public sealed class MealLogsController : ControllerBase
         {
             return BadRequest(new { message = ex.Message });
         }
+    }
+
+    [HttpPut("{mealLogId:guid}")]
+    public async Task<ActionResult<MealLogResponseDto>> Update(
+        Guid mealLogId,
+        [FromBody] UpdateMealLogRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (!TryGetUserId(out Guid userId))
+        {
+            return Unauthorized(new { message = "Usuário não autenticado." });
+        }
+
+        try
+        {
+            MealLogResponseDto? response =
+                await _mealLogService.UpdateAsync(userId, mealLogId, request, cancellationToken);
+
+            if (response is null)
+            {
+                return NotFound(new { message = "Refeição não encontrada." });
+            }
+
+            return Ok(response);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpDelete("{mealLogId:guid}")]
+    public async Task<ActionResult> Delete(
+        Guid mealLogId,
+        CancellationToken cancellationToken)
+    {
+        if (!TryGetUserId(out Guid userId))
+        {
+            return Unauthorized(new { message = "Usuário não autenticado." });
+        }
+
+        bool deleted = await _mealLogService.SoftDeleteAsync(userId, mealLogId, cancellationToken);
+        if (!deleted)
+        {
+            return NotFound(new { message = "Refeição não encontrada." });
+        }
+
+        return NoContent();
     }
 
     private bool TryGetUserId(out Guid userId)

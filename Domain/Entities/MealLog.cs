@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using RudFitAI.Domain.Common;
 using RudFitAI.Domain.Enums;
 
@@ -37,6 +38,7 @@ public sealed class MealLog : BaseEntity
         TotalProtein = totalProtein;
         TotalCarbs = totalCarbs;
         TotalFat = totalFat;
+        IsDeleted = false;
         _items.AddRange(items);
     }
 
@@ -60,7 +62,49 @@ public sealed class MealLog : BaseEntity
 
     public decimal TotalFat { get; private set; }
 
+    public bool IsDeleted { get; private set; }
+
+    public DateTime? DeletedAt { get; private set; }
+
     public User User { get; private set; } = null!;
 
     public IReadOnlyCollection<MealLogItem> Items => _items;
+
+    [NotMapped]
+    public IReadOnlyCollection<MealLogItem> ActiveItems => _items.Where(item => !item.IsDeleted).ToList();
+
+    public void UpdateDetails(string name, MealType mealType)
+    {
+        Name = name.Trim();
+        MealType = mealType;
+    }
+
+    public void UpdateTotals(int totalCalories, decimal totalProtein, decimal totalCarbs, decimal totalFat)
+    {
+        TotalCalories = totalCalories;
+        TotalProtein = totalProtein;
+        TotalCarbs = totalCarbs;
+        TotalFat = totalFat;
+    }
+
+    public void AddItem(MealLogItem item)
+    {
+        _items.Add(item);
+    }
+
+    public void SoftDelete(DateTime deletedAt)
+    {
+        if (IsDeleted)
+        {
+            return;
+        }
+
+        IsDeleted = true;
+        DeletedAt = deletedAt;
+
+        foreach (MealLogItem item in _items.Where(existingItem => !existingItem.IsDeleted))
+        {
+            item.SoftDelete(deletedAt);
+        }
+    }
 }

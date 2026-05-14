@@ -77,6 +77,66 @@ public sealed class OnboardingService : IOnboardingService
         };
     }
 
+    public async Task<CalculateDailyGoalsResponseDto?> UpdateAndCalculateDailyGoalsAsync(
+        Guid userId,
+        CompleteOnboardingRequest request,
+        CancellationToken cancellationToken)
+    {
+        _onboardingDomainService.EnsureValidAnswers(
+            request.Goal,
+            request.Gender,
+            request.Age,
+            request.Height,
+            request.Weight,
+            request.StartingWeight,
+            request.TargetWeight,
+            request.ActivityLevel,
+            request.DailyRoutineLevel,
+            request.GoalIntensity);
+
+        (Account? account, UserProfile? userProfile) =
+            await _onboardingRepository.GetByUserIdAsync(userId, cancellationToken);
+
+        if (account == null)
+        {
+            return null;
+        }
+
+        UserProfile profile = userProfile ?? new UserProfile(Guid.NewGuid(), userId);
+
+        profile.CompleteOnboarding(
+            request.Goal,
+            request.Gender,
+            request.Age,
+            request.Height,
+            request.Weight,
+            request.StartingWeight,
+            request.TargetWeight,
+            request.ActivityLevel,
+            request.DailyRoutineLevel,
+            request.GoalIntensity);
+
+        if (userProfile == null)
+        {
+            await _onboardingRepository.AddUserProfileAsync(profile, cancellationToken);
+        }
+
+        account.CompleteFirstAccess();
+
+        (int calories, int protein, int carbs, int fat) = _dailyGoalsDomainService.Calculate(profile);
+
+        profile.UpdateDailyGoals(calories, protein, carbs, fat);
+        await _onboardingRepository.SaveChangesAsync(cancellationToken);
+
+        return new CalculateDailyGoalsResponseDto
+        {
+            DailyCaloriesGoal = calories,
+            DailyProteinGoal = protein,
+            DailyCarbsGoal = carbs,
+            DailyFatGoal = fat
+        };
+    }
+
     public async Task<CalculateDailyGoalsResponseDto?> CalculateDailyGoalsAsync(
         Guid userId,
         CancellationToken cancellationToken)

@@ -10,6 +10,11 @@ public interface IOnboardingService
         CompleteOnboardingRequest request,
         CancellationToken cancellationToken);
 
+    Task<CalculateDailyGoalsResponseDto?> UpdateAndCalculateDailyGoalsAsync(
+        Guid userId,
+        CompleteOnboardingRequest request,
+        CancellationToken cancellationToken);
+
     Task<CalculateDailyGoalsResponseDto?> CalculateDailyGoalsAsync(Guid userId, CancellationToken cancellationToken);
 
     Task<CalculateDailyGoalsResponseDto?> GetDailyGoalsAsync(Guid userId, CancellationToken cancellationToken);

@@ -18,6 +18,22 @@ public sealed class MealLogRepository : IMealLogRepository
         await _dbContext.MealLogs.AddAsync(mealLog, cancellationToken);
     }
 
+    public async Task<MealLog?> GetActiveByIdAsync(
+        Guid userId,
+        Guid mealLogId,
+        CancellationToken cancellationToken)
+    {
+        MealLog? mealLog = await _dbContext.MealLogs
+            .Include(existingMealLog => existingMealLog.Items)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(
+                existingMealLog => existingMealLog.UserId == userId
+                                   && existingMealLog.Id == mealLogId,
+                cancellationToken);
+
+        return mealLog;
+    }
+
     public async Task<IReadOnlyCollection<MealLog>> ListByConsumedAtRangeAsync(
         Guid userId,
         DateTime startInclusive,

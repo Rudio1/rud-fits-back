@@ -32,6 +32,7 @@ public sealed class MealLogItem : BaseEntity
         Protein = protein;
         Carbs = carbs;
         Fat = fat;
+        IsDeleted = false;
     }
 
     public Guid MealLogId { get; private set; }
@@ -52,7 +53,42 @@ public sealed class MealLogItem : BaseEntity
 
     public decimal Fat { get; private set; }
 
+    public bool IsDeleted { get; private set; }
+
+    public DateTime? DeletedAt { get; private set; }
+
     public Food Food { get; private set; } = null!;
 
     public MealLog MealLog { get; private set; } = null!;
+
+    public void Update(
+        Guid foodId,
+        string foodName,
+        decimal quantity,
+        UnitType unitType,
+        int calories,
+        decimal protein,
+        decimal carbs,
+        decimal fat)
+    {
+        FoodId = foodId;
+        FoodName = foodName.Trim();
+        Quantity = quantity;
+        UnitType = unitType;
+        Calories = calories;
+        Protein = protein;
+        Carbs = carbs;
+        Fat = fat;
+    }
+
+    public void SoftDelete(DateTime deletedAt)
+    {
+        if (IsDeleted)
+        {
+            return;
+        }
+
+        IsDeleted = true;
+        DeletedAt = deletedAt;
+    }
 }

@@ -15,6 +15,22 @@ public interface IMealLogService
         CreateMealLogFromDetectedFoodsRequest request,
         CancellationToken cancellationToken);
 
+    Task<MealLogResponseDto?> UpdateAsync(
+        Guid userId,
+        Guid mealLogId,
+        UpdateMealLogRequest request,
+        CancellationToken cancellationToken);
+
+    Task<bool> SoftDeleteAsync(
+        Guid userId,
+        Guid mealLogId,
+        CancellationToken cancellationToken);
+
+    Task<DailyMealConsumptionSummaryResponseDto> GetDailyConsumptionSummaryAsync(
+        Guid userId,
+        DateOnly date,
+        CancellationToken cancellationToken);
+
     Task<IReadOnlyCollection<MealLogResponseDto>> ListByDateAsync(
         Guid userId,
         DateOnly date,

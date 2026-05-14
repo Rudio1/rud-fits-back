@@ -114,10 +114,11 @@ public sealed class MealDetectedFoodsNutritionEstimationService : IMealDetectedF
             aiPosition++;
 
             decimal kcal = ParseDecimal(aiItem.CaloriesKcal);
+            decimal protein = ParseDecimal(aiItem.ProteinGrams);
             decimal carbs = ParseDecimal(aiItem.CarbohydratesGrams);
             decimal fat = ParseDecimal(aiItem.FatGrams);
 
-            Food newFood = CreateAiFoodFromPortionEstimate(displayName, grams, kcal, carbs, fat);
+            Food newFood = CreateAiFoodFromPortionEstimate(displayName, grams, kcal, protein, carbs, fat);
             Food persisted = await _foodRepository.AddOrGetActiveAiFoodAsync(newFood, cancellationToken);
             items.Add(MapFromFood(persisted, displayName, grams));
         }
@@ -129,6 +130,7 @@ public sealed class MealDetectedFoodsNutritionEstimationService : IMealDetectedF
         string displayName,
         int portionGrams,
         decimal portionKcal,
+        decimal portionProtein,
         decimal portionCarbs,
         decimal portionFat)
     {
@@ -139,6 +141,7 @@ public sealed class MealDetectedFoodsNutritionEstimationService : IMealDetectedF
 
         decimal factor = 100m / portionGrams;
         int calories100 = (int)decimal.Round(portionKcal * factor, 0, MidpointRounding.AwayFromZero);
+        decimal protein100 = decimal.Round(portionProtein * factor, 2, MidpointRounding.AwayFromZero);
         decimal carbs100 = decimal.Round(portionCarbs * factor, 2, MidpointRounding.AwayFromZero);
         decimal fat100 = decimal.Round(portionFat * factor, 2, MidpointRounding.AwayFromZero);
 
@@ -151,7 +154,7 @@ public sealed class MealDetectedFoodsNutritionEstimationService : IMealDetectedF
             baseQuantity: 100m,
             UnitType.Gram,
             calories: calories100,
-            protein: 0m,
+            protein: protein100,
             carbs: carbs100,
             fat: fat100,
             isActive: true);
@@ -166,6 +169,7 @@ public sealed class MealDetectedFoodsNutritionEstimationService : IMealDetectedF
 
         decimal mult = portionGrams / food.BaseQuantity;
         decimal kcal = decimal.Round(food.Calories * mult, 2, MidpointRounding.AwayFromZero);
+        decimal protein = decimal.Round(food.Protein * mult, 2, MidpointRounding.AwayFromZero);
         decimal carbs = decimal.Round(food.Carbs * mult, 2, MidpointRounding.AwayFromZero);
         decimal fat = decimal.Round(food.Fat * mult, 2, MidpointRounding.AwayFromZero);
 
@@ -175,6 +179,7 @@ public sealed class MealDetectedFoodsNutritionEstimationService : IMealDetectedF
             Name = displayName,
             EstimatedQuantityGrams = portionGrams,
             CaloriesKcal = kcal,
+            ProteinGrams = protein,
             CarbohydratesGrams = carbs,
             FatGrams = fat
         };
@@ -228,6 +233,9 @@ public sealed class MealDetectedFoodsNutritionEstimationService : IMealDetectedF
     {
         [JsonPropertyName("caloriesKcal")]
         public JsonElement CaloriesKcal { get; init; }
+
+        [JsonPropertyName("proteinGrams")]
+        public JsonElement ProteinGrams { get; init; }
 
         [JsonPropertyName("carbohydratesGrams")]
         public JsonElement CarbohydratesGrams { get; init; }

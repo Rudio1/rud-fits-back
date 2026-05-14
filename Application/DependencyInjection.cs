@@ -5,8 +5,10 @@ using RudFitAI.Application.Services.Auth;
 using RudFitAI.Application.Services.Interfaces.Auth;
 using RudFitAI.Application.Services.Interfaces.Meals;
 using RudFitAI.Application.Services.Interfaces.Onboarding;
+using RudFitAI.Application.Services.Interfaces.Profile;
 using RudFitAI.Application.Services.Meals;
 using RudFitAI.Application.Services.Onboarding;
+using RudFitAI.Application.Services.Profile;
 using RudFitAI.Domain.DomainServices;
 
 namespace RudFitAI.Application;
@@ -25,6 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IMealPhotoAnalysisService, MealPhotoAnalysisService>();
         services.AddScoped<IMealDetectedFoodsNutritionEstimationService, MealDetectedFoodsNutritionEstimationService>();
         services.AddScoped<IOnboardingService, OnboardingService>();
+        services.AddScoped<IProfileService, ProfileService>();
         return services;
     }
 }

@@ -10,31 +10,44 @@ namespace RudFitAI.Infrastructure.OpenAI;
 public sealed class OpenAiMealNutritionEstimationClient : IMealNutritionEstimationChatClient
 {
     private const string UserPrompt = """
-        You estimate nutrition for each food portion in the input JSON.
+    You estimate nutritional values for foods based on the provided portion size.
 
-        Input JSON shape: { "foods": [ { "name": string, "estimatedQuantityGrams": number }, ... ] }
-
-        For EACH item, the grams are the TOTAL amount of that food in the meal. Estimate kcal, carbohydrates (g), and fat (g) for THAT exact portion (not per 100g).
-
-        Return ONLY valid JSON (no markdown fences). Same array length and order as input. Echo each "name" and "estimatedQuantityGrams" exactly as in the input.
-
-        Output shape:
+    Input JSON:
+    {
+    "foods": [
         {
-          "foods": [
-            {
-              "name": "string",
-              "estimatedQuantityGrams": number,
-              "caloriesKcal": number,
-              "carbohydratesGrams": number,
-              "fatGrams": number
-            }
-          ]
+        "name": "string",
+        "estimatedQuantityGrams": number
         }
+    ]
+    }
 
-        Values are approximate. Use 0 for negligible macros when appropriate.
+    Rules:
+    - Return ONLY valid JSON.
+    - Do not use markdown.
+    - Do not include explanations or extra text.
+    - Preserve the exact same array order.
+    - Echo "name" and "estimatedQuantityGrams" exactly as received.
+    - Nutritional values must represent the FULL portion informed in "estimatedQuantityGrams".
+    - Values are approximate estimates.
+    - Use 0 when a macro is negligible.
 
-        Input:
-        """;
+    Return format:
+    {
+    "foods": [
+        {
+        "name": "string",
+        "estimatedQuantityGrams": number,
+        "caloriesKcal": number,
+        "proteinGrams": number,
+        "carbohydratesGrams": number,
+        "fatGrams": number
+        }
+    ]
+    }
+
+    Input:
+    """;
 
     private readonly HttpClient _httpClient;
     private readonly OpenAiOptions _options;

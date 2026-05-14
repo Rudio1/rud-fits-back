@@ -44,6 +44,11 @@ public sealed class MealLogConfiguration : IEntityTypeConfiguration<MealLog>
             .HasColumnType("decimal(10,2)")
             .IsRequired();
 
+        builder.Property(mealLog => mealLog.IsDeleted)
+            .IsRequired();
+
+        builder.Property(mealLog => mealLog.DeletedAt);
+
         builder.HasOne(mealLog => mealLog.User)
             .WithMany()
             .HasForeignKey(mealLog => mealLog.UserId)
@@ -53,6 +58,8 @@ public sealed class MealLogConfiguration : IEntityTypeConfiguration<MealLog>
             .WithOne(item => item.MealLog)
             .HasForeignKey(item => item.MealLogId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasQueryFilter(mealLog => !mealLog.IsDeleted);
 
         builder.HasIndex(mealLog => new { mealLog.UserId, mealLog.ConsumedAt });
     }
