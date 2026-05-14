@@ -1,0 +1,11 @@
+.git
+.github
+.cursor
+.vs
+temp-build
+**/bin
+**/obj
+**/.DS_Store
+**/Thumbs.db
+Web/appsettings.Development.json
+Web/appsettings.json
