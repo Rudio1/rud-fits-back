@@ -4,7 +4,7 @@ namespace RudFitAI.Application.DTOs.Meals.Requests;
 
 public sealed class UpdateMealLogRequest
 {
-    public required string Name { get; init; }
+    public string? Name { get; init; }
 
     public MealType MealType { get; init; }
 

@@ -43,7 +43,7 @@ public sealed class MealLogService : IMealLogService
         Guid mealLogId = Guid.NewGuid();
         DateTime consumedAt =
             DateTime.SpecifyKind(request.ConsumedAt.DateTime, DateTimeKind.Unspecified);
-        string mealName = request.Name.Trim();
+        string mealName = ResolveMealName(request.Name, request.MealType);
         string? notes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim();
 
         IReadOnlyCollection<(Guid FoodId, decimal Quantity)> portions = request.Items
@@ -169,7 +169,7 @@ public sealed class MealLogService : IMealLogService
             mealLog.AddItem(newItem);
         }
 
-        mealLog.UpdateDetails(request.Name, request.MealType);
+        mealLog.UpdateDetails(ResolveMealName(request.Name, request.MealType), request.MealType);
 
         IReadOnlyCollection<MealLogItem> activeItems = mealLog.ActiveItems;
         _mealLogDomainService.EnsureValidMealLog(mealLog.MealType, mealLog.ConsumedAt, activeItems);

@@ -8,10 +8,13 @@ public sealed class CreateMealLogRequestValidator : AbstractValidator<CreateMeal
     public CreateMealLogRequestValidator()
     {
         RuleFor(x => x.Name)
-            .NotEmpty()
-            .WithMessage("Nome da refeição é obrigatório.")
             .MaximumLength(120)
-            .WithMessage("Nome da refeição deve ter no máximo 120 caracteres.");
+            .WithMessage("Nome da refeição deve ter no máximo 120 caracteres.")
+            .When(x => !string.IsNullOrWhiteSpace(x.Name));
+
+        RuleFor(x => x.MealType)
+            .IsInEnum()
+            .WithMessage("Tipo de refeição inválido.");
 
         RuleFor(x => x.ConsumedAt)
             .NotEqual(default(DateTimeOffset))
