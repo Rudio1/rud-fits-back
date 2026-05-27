@@ -11,13 +11,16 @@ public sealed class AsaasWebhooksController : ControllerBase
 {
     private readonly IAsaasWebhookProcessor _webhookProcessor;
     private readonly AsaasOptions _asaasOptions;
+    private readonly ILogger<AsaasWebhooksController> _logger;
 
     public AsaasWebhooksController(
         IAsaasWebhookProcessor webhookProcessor,
-        IOptions<AsaasOptions> asaasOptions)
+        IOptions<AsaasOptions> asaasOptions,
+        ILogger<AsaasWebhooksController> logger)
     {
         _webhookProcessor = webhookProcessor;
         _asaasOptions = asaasOptions.Value;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -25,6 +28,8 @@ public sealed class AsaasWebhooksController : ControllerBase
     {
         if (!IsWebhookAuthorized())
         {
+            _logger.LogWarning(
+                "Webhook Asaas rejeitado: token inválido ou ausente (header asaas-access-token).");
             return Unauthorized();
         }
 
@@ -33,10 +38,18 @@ public sealed class AsaasWebhooksController : ControllerBase
 
         if (string.IsNullOrWhiteSpace(payloadJson))
         {
+            _logger.LogWarning("Webhook Asaas recebido com corpo vazio.");
             return BadRequest(new { message = "Payload vazio." });
         }
 
+        _logger.LogInformation(
+            "Webhook Asaas HTTP recebido. ContentLength={ContentLength} Payload={Payload}",
+            payloadJson.Length,
+            payloadJson);
+
         await _webhookProcessor.ProcessAsync(payloadJson, cancellationToken);
+
+        _logger.LogInformation("Webhook Asaas processado com sucesso (HTTP 200).");
         return Ok();
     }
 
