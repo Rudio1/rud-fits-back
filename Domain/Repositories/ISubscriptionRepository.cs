@@ -32,5 +32,7 @@ public interface ISubscriptionRepository
 
     Task AddUserSubscriptionAsync(UserSubscription userSubscription, CancellationToken cancellationToken);
 
+    Task<string?> GetLatestAsaasCustomerIdByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

@@ -45,6 +45,11 @@ public static class DependencyInjection
                     : asaas.BaseUrl.TrimEnd('/') + "/";
                 client.BaseAddress = new Uri(baseUrl);
                 client.Timeout = TimeSpan.FromSeconds(30);
+
+                string userAgent = string.IsNullOrWhiteSpace(asaas.UserAgent)
+                    ? "RudFitAI/1.0"
+                    : asaas.UserAgent.Trim();
+                client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", userAgent);
             });
 
         services.AddDbContext<RudFitAIDbContext>(options => options.UseSqlServer(connectionString));

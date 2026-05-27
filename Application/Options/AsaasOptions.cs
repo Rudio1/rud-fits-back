@@ -11,4 +11,9 @@ public sealed class AsaasOptions
     public string WebhookAccessToken { get; init; } = string.Empty;
 
     public int DefaultDueDays { get; init; } = 3;
+
+    /// <summary>
+    /// Obrigatório pela API Asaas (ex.: "RudFitAI/1.0 (seu@email.com)").
+    /// </summary>
+    public string UserAgent { get; init; } = "RudFitAI/1.0";
 }

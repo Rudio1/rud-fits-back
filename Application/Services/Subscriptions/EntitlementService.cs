@@ -8,13 +8,16 @@ namespace RudFitAI.Application.Services.Subscriptions;
 public sealed class EntitlementService : IEntitlementService
 {
     private readonly ISubscriptionRepository _subscriptionRepository;
+    private readonly IProfileRepository _profileRepository;
     private readonly SubscriptionDomainService _subscriptionDomainService;
 
     public EntitlementService(
         ISubscriptionRepository subscriptionRepository,
+        IProfileRepository profileRepository,
         SubscriptionDomainService subscriptionDomainService)
     {
         _subscriptionRepository = subscriptionRepository;
+        _profileRepository = profileRepository;
         _subscriptionDomainService = subscriptionDomainService;
     }
 
@@ -36,5 +39,13 @@ public sealed class EntitlementService : IEntitlementService
         }
 
         return false;
+    }
+
+    public Task<bool> TryConsumeFreeScannerUseAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return _profileRepository.TryIncrementFreeScannerUsesAsync(
+            userId,
+            SubscriptionDomainService.FreeScannerLifetimeLimit,
+            cancellationToken);
     }
 }

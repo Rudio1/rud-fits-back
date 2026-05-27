@@ -46,7 +46,19 @@ public sealed class UserProfile : BaseEntity
 
     public decimal? StartingWeight { get; private set; }
 
+    public int FreeScannerUsesCount { get; private set; }
+
     public User User { get; private set; } = null!;
+
+    public bool CanUseFreeScanner(int lifetimeLimit)
+    {
+        return FreeScannerUsesCount < lifetimeLimit;
+    }
+
+    public void RecordFreeScannerUse()
+    {
+        FreeScannerUsesCount++;
+    }
 
     public void CompleteOnboarding(
         GoalType goal,

@@ -22,4 +22,20 @@ public sealed class ProfileRepository : IProfileRepository
 
         return user;
     }
+
+    public async Task<bool> TryIncrementFreeScannerUsesAsync(
+        Guid userId,
+        int lifetimeLimit,
+        CancellationToken cancellationToken)
+    {
+        int rowsAffected = await _dbContext.UserProfiles
+            .Where(profile => profile.UserId == userId && profile.FreeScannerUsesCount < lifetimeLimit)
+            .ExecuteUpdateAsync(
+                setters => setters.SetProperty(
+                    profile => profile.FreeScannerUsesCount,
+                    profile => profile.FreeScannerUsesCount + 1),
+                cancellationToken);
+
+        return rowsAffected > 0;
+    }
 }

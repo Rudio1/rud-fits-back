@@ -59,6 +59,7 @@ public sealed class AsaasWebhookProcessor : IAsaasWebhookProcessor
         switch (eventType)
         {
             case "PAYMENT_RECEIVED":
+            case "PAYMENT_CONFIRMED":
                 HandlePaymentReceived(subscription, root);
                 break;
             case "PAYMENT_OVERDUE":
@@ -71,7 +72,13 @@ public sealed class AsaasWebhookProcessor : IAsaasWebhookProcessor
                 break;
             case "PAYMENT_REFUNDED":
             case "PAYMENT_DELETED":
-                subscription.Expire();
+                if (subscription.Status == SubscriptionStatus.Active
+                    || subscription.Status == SubscriptionStatus.Trialing
+                    || subscription.Status == SubscriptionStatus.PastDue)
+                {
+                    subscription.Expire();
+                }
+
                 break;
             case "PIX_AUTOMATIC_RECURRING_AUTHORIZATION_ACTIVATED":
                 subscription.SetBillingType(BillingType.PixAutomatic);

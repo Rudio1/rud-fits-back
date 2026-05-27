@@ -103,6 +103,18 @@ public sealed class SubscriptionRepository : ISubscriptionRepository
         await _dbContext.UserSubscriptions.AddAsync(userSubscription, cancellationToken);
     }
 
+    public async Task<string?> GetLatestAsaasCustomerIdByUserIdAsync(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        return await _dbContext.UserSubscriptions
+            .AsNoTracking()
+            .Where(subscription => subscription.UserId == userId && subscription.AsaasCustomerId != null)
+            .OrderByDescending(subscription => subscription.CreatedAt)
+            .Select(subscription => subscription.AsaasCustomerId)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         return _dbContext.SaveChangesAsync(cancellationToken);
@@ -127,10 +139,11 @@ public sealed class SubscriptionRepository : ISubscriptionRepository
         {
             SubscriptionStatus.Active => 0,
             SubscriptionStatus.Trialing => 1,
-            SubscriptionStatus.PastDue => 2,
-            SubscriptionStatus.Canceled => 3,
-            SubscriptionStatus.Expired => 4,
-            _ => 5
+            SubscriptionStatus.Pending => 2,
+            SubscriptionStatus.PastDue => 3,
+            SubscriptionStatus.Canceled => 4,
+            SubscriptionStatus.Expired => 5,
+            _ => 6
         };
     }
 }

@@ -102,4 +102,28 @@ public sealed class UserSubscription : BaseEntity
     {
         SubscriptionPlanId = subscriptionPlanId;
     }
+
+    public void SetPendingCheckout(
+        BillingType billingType,
+        string? asaasCustomerId = null,
+        string? asaasSubscriptionId = null,
+        string? asaasPaymentId = null)
+    {
+        BillingType = billingType;
+        Status = SubscriptionStatus.Pending;
+        if (!string.IsNullOrWhiteSpace(asaasCustomerId))
+        {
+            AsaasCustomerId = asaasCustomerId;
+        }
+
+        if (!string.IsNullOrWhiteSpace(asaasSubscriptionId))
+        {
+            AsaasSubscriptionId = asaasSubscriptionId;
+        }
+
+        if (!string.IsNullOrWhiteSpace(asaasPaymentId))
+        {
+            AsaasPaymentId = asaasPaymentId;
+        }
+    }
 }

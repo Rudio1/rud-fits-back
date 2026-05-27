@@ -13,4 +13,8 @@ public sealed class SubscriptionStatusResponseDto
     public DateTime? CurrentPeriodEnd { get; init; }
 
     public string? BillingType { get; init; }
+
+    public int? FreeScannerUsesCount { get; init; }
+
+    public int? FreeScannerUsesRemaining { get; init; }
 }
