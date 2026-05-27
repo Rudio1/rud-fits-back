@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using RudFitAI.Application.Abstractions;
 using RudFitAI.Application.Options;
 using RudFitAI.Domain.Repositories;
+using RudFitAI.Infrastructure.Asaas;
 using RudFitAI.Infrastructure.OpenAI;
 using RudFitAI.Infrastructure.Persistence;
 using RudFitAI.Infrastructure.Persistence.Repositories;
@@ -23,6 +24,7 @@ public static class DependencyInjection
         }
 
         services.Configure<OpenAiOptions>(configuration.GetSection(OpenAiOptions.SectionName));
+        services.Configure<AsaasOptions>(configuration.GetSection(AsaasOptions.SectionName));
         services.Configure<PersistenceOptions>(configuration.GetSection(PersistenceOptions.SectionName));
         services
             .AddHttpClient("OpenAi")
@@ -34,6 +36,17 @@ public static class DependencyInjection
                 client.Timeout = TimeSpan.FromSeconds(seconds);
             });
 
+        services
+            .AddHttpClient<IAsaasClient, AsaasClient>((serviceProvider, client) =>
+            {
+                AsaasOptions asaas = serviceProvider.GetRequiredService<IOptions<AsaasOptions>>().Value;
+                string baseUrl = string.IsNullOrWhiteSpace(asaas.BaseUrl)
+                    ? "https://sandbox.asaas.com/api/v3/"
+                    : asaas.BaseUrl.TrimEnd('/') + "/";
+                client.BaseAddress = new Uri(baseUrl);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
+
         services.AddDbContext<RudFitAIDbContext>(options => options.UseSqlServer(connectionString));
         services.AddScoped<IMealPhotoVisionClient, OpenAiMealPhotoClient>();
         services.AddScoped<IMealNutritionEstimationChatClient, OpenAiMealNutritionEstimationClient>();
@@ -42,6 +55,7 @@ public static class DependencyInjection
         services.AddScoped<IMealLogRepository, MealLogRepository>();
         services.AddScoped<IOnboardingRepository, OnboardingRepository>();
         services.AddScoped<IProfileRepository, ProfileRepository>();
+        services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 
         return services;
     }

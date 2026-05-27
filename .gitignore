@@ -55,3 +55,4 @@ package.json
 /temp-build
 /Infrastructure/Persistence/Migrations
 \Infrastructure\Persistence\Migrations
+/docs

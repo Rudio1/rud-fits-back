@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using RudFitAI.Application.DTOs.Meals.Requests;
 using RudFitAI.Application.DTOs.Meals.Responses;
 using RudFitAI.Application.Services.Interfaces.Meals;
+using RudFitAI.Web.Filters;
 
 namespace RudFitAI.Web.Controllers;
 
@@ -97,6 +98,7 @@ public sealed class MealLogsController : ControllerBase
     }
 
     [HttpPost("analyze-photo")]
+    [RequirePremium]
     [RequestSizeLimit(6 * 1024 * 1024)]
     [RequestFormLimits(MultipartBodyLengthLimit = 6 * 1024 * 1024)]
     [Consumes("multipart/form-data")]

@@ -4,6 +4,7 @@ using RudFitAI.Application;
 using RudFitAI.Application.Abstractions;
 using RudFitAI.Infrastructure;
 using RudFitAI.Web.Authentication;
+using RudFitAI.Web.Filters;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddRudFitAiJwtAuthentication(builder.Configuration);
 builder.Services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
 builder.Services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddScoped<RequirePremiumFilter>();
 
 WebApplication app = builder.Build();
 
