@@ -48,6 +48,7 @@ builder.Services.AddRudFitAiJwtAuthentication(builder.Configuration);
 builder.Services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
 builder.Services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<RequireMealAccessFilter>();
+builder.Services.AddScoped<RequirePremiumFilter>();
 
 WebApplication app = builder.Build();
 

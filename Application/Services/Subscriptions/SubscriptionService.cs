@@ -56,22 +56,27 @@ public sealed class SubscriptionService : ISubscriptionService
     {
         bool hasPremium = await _entitlementService.HasPremiumAsync(userId, cancellationToken);
 
+        int? freeScannerUsesCount = null;
+        int? freeScannerUsesRemaining = null;
+        if (!hasPremium)
+        {
+            (int usesCount, int usesRemaining) =
+                await GetFreeScannerUsageAsync(userId, cancellationToken);
+            freeScannerUsesCount = usesCount;
+            freeScannerUsesRemaining = usesRemaining;
+        }
+
         UserSubscription? subscription =
             await _subscriptionRepository.GetCurrentUserSubscriptionByUserIdAsync(userId, cancellationToken);
 
         if (subscription is null)
         {
-            User? user = await _profileRepository.GetByIdWithProfileAsync(userId, cancellationToken);
-            int freeUses = user?.UserProfile?.FreeScannerUsesCount ?? 0;
-
             return new SubscriptionStatusResponseDto
             {
                 HasPremium = false,
                 Status = SubscriptionStatus.None.ToString(),
-                FreeScannerUsesCount = freeUses,
-                FreeScannerUsesRemaining = Math.Max(
-                    0,
-                    SubscriptionDomainService.FreeScannerLifetimeLimit - freeUses)
+                FreeScannerUsesCount = freeScannerUsesCount,
+                FreeScannerUsesRemaining = freeScannerUsesRemaining
             };
         }
 
@@ -84,8 +89,23 @@ public sealed class SubscriptionService : ISubscriptionService
             CurrentPeriodEnd = subscription.CurrentPeriodEnd,
             BillingType = subscription.BillingType == BillingType.None
                 ? null
-                : subscription.BillingType.ToString()
+                : subscription.BillingType.ToString(),
+            FreeScannerUsesCount = freeScannerUsesCount,
+            FreeScannerUsesRemaining = freeScannerUsesRemaining
         };
+    }
+
+    private async Task<(int UsesCount, int UsesRemaining)> GetFreeScannerUsageAsync(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        User? user = await _profileRepository.GetByIdWithProfileAsync(userId, cancellationToken);
+        int usesCount = user?.UserProfile?.FreeScannerUsesCount ?? 0;
+        int usesRemaining = Math.Max(
+            0,
+            SubscriptionDomainService.FreeScannerLifetimeLimit - usesCount);
+
+        return (usesCount, usesRemaining);
     }
 
     public async Task<StartCheckoutResponseDto> StartCardSubscriptionAsync(

@@ -12,7 +12,6 @@ namespace RudFitAI.Web.Controllers;
 [ApiController]
 [Route("api/meal-logs")]
 [Authorize]
-[RequireMealAccess]
 public sealed class MealLogsController : ControllerBase
 {
     private readonly IMealLogService _mealLogService;
@@ -99,6 +98,7 @@ public sealed class MealLogsController : ControllerBase
     }
 
     [HttpPost("analyze-photo")]
+    [RequireMealAccess]
     [AllowFreeScanner]
     [RequestSizeLimit(6 * 1024 * 1024)]
     [RequestFormLimits(MultipartBodyLengthLimit = 6 * 1024 * 1024)]
@@ -145,6 +145,7 @@ public sealed class MealLogsController : ControllerBase
     }
 
     [HttpPost("estimate-detected-foods-nutrition")]
+    [RequirePremium]
     public async Task<ActionResult<EstimateDetectedFoodsNutritionResponseDto>> EstimateDetectedFoodsNutrition(
         [FromBody] EstimateDetectedFoodsNutritionRequest request,
         CancellationToken cancellationToken)
