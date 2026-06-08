@@ -39,6 +39,10 @@ public sealed class RudFitAIDbContext : DbContext
 
     public DbSet<PaymentEvent> PaymentEvents => Set<PaymentEvent>();
 
+    public DbSet<FriendInviteToken> FriendInviteTokens => Set<FriendInviteToken>();
+
+    public DbSet<Friendship> Friendships => Set<Friendship>();
+
     public override int SaveChanges()
     {
         ApplyAuditTimestamps();

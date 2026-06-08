@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.Configure<OpenAiOptions>(configuration.GetSection(OpenAiOptions.SectionName));
         services.Configure<AsaasOptions>(configuration.GetSection(AsaasOptions.SectionName));
         services.Configure<PersistenceOptions>(configuration.GetSection(PersistenceOptions.SectionName));
+        services.Configure<FriendshipOptions>(configuration.GetSection(FriendshipOptions.SectionName));
         services
             .AddHttpClient("OpenAi")
             .ConfigureHttpClient((serviceProvider, client) =>
@@ -61,6 +62,7 @@ public static class DependencyInjection
         services.AddScoped<IOnboardingRepository, OnboardingRepository>();
         services.AddScoped<IProfileRepository, ProfileRepository>();
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+        services.AddScoped<IFriendshipRepository, FriendshipRepository>();
 
         return services;
     }
