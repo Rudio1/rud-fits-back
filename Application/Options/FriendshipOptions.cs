@@ -4,5 +4,5 @@ public sealed class FriendshipOptions
 {
     public const string SectionName = "Friendship";
 
-    public string InviteBaseUrl { get; init; } = "https://app.rudfitai.com/invite/";
+    public string InviteBaseUrl { get; init; };
 }
