@@ -5,7 +5,5 @@ namespace RudFitAI.Application.Services.Interfaces.Auth;
 
 public interface IAuthService
 {
-    Task<AuthResponseDto?> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken);
-
     Task<AuthResponseDto?> LoginAsync(LoginRequest request, CancellationToken cancellationToken);
 }

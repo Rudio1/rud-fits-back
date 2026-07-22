@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RudFitAI.Application.Abstractions;
 using RudFitAI.Application.Options;
+using RudFitAI.Domain.Auth;
 
 namespace RudFitAI.Web.Authentication;
 
@@ -17,7 +18,7 @@ public sealed class JwtTokenGenerator : IJwtTokenGenerator
         _options = options.Value;
     }
 
-    public string GenerateAccessToken(Guid userId, string email, DateTime utcNow)
+    public string GenerateAccessToken(Guid userId, string email, DateTime utcNow, bool isAdmin = false)
     {
         if (string.IsNullOrWhiteSpace(_options.Issuer)
             || string.IsNullOrWhiteSpace(_options.Audience)
@@ -35,12 +36,18 @@ public sealed class JwtTokenGenerator : IJwtTokenGenerator
         SymmetricSecurityKey securityKey = new(keyBytes);
         SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
 
-        Claim[] claims =
+        List<Claim> claims =
         [
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         ];
+
+        if (isAdmin)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, AuthRoles.Admin));
+        }
 
         DateTime expiresUtc = utcNow.AddMinutes(_options.AccessTokenMinutes);
 

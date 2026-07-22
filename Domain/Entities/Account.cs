@@ -9,7 +9,7 @@ public sealed class Account : BaseEntity
     {
     }
 
-    public Account(Guid id, Guid userId, string passwordHash, LoginProvider loginProvider)
+    public Account(Guid id, Guid userId, string passwordHash, LoginProvider loginProvider, bool isAdmin = false)
         : this()
     {
         Id = id;
@@ -19,6 +19,7 @@ public sealed class Account : BaseEntity
         LoginProvider = loginProvider;
         IsTwoFactorEnabled = false;
         IsFirstAccess = true;
+        IsAdmin = isAdmin;
     }
 
     public Guid UserId { get; private set; }
@@ -39,6 +40,8 @@ public sealed class Account : BaseEntity
 
     public bool IsFirstAccess { get; private set; }
 
+    public bool IsAdmin { get; private set; }
+
     public User User { get; private set; } = null!;
 
     public void RecordLogin(DateTime utcNow)
@@ -49,6 +52,16 @@ public sealed class Account : BaseEntity
     public void CompleteFirstAccess()
     {
         IsFirstAccess = false;
+    }
+
+    public void MarkAsAdmin()
+    {
+        IsAdmin = true;
+    }
+
+    public void MarkEmailVerified()
+    {
+        EmailVerified = true;
     }
 
     public void UpdatePasswordHash(string passwordHash)

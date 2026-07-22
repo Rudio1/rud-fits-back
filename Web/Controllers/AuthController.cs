@@ -17,19 +17,6 @@ public sealed class AuthController : ControllerBase
         _authService = authService;
     }
 
-    [HttpPost("register")]
-    [AllowAnonymous]
-    public async Task<ActionResult<AuthResponseDto>> Register(RegisterRequest request, CancellationToken cancellationToken)
-    {
-        AuthResponseDto? result = await _authService.RegisterAsync(request, cancellationToken);
-        if (result == null)
-        {
-            return Conflict(new { message = "Não foi possível concluir o cadastro. E-mail ou username já está em uso." });
-        }
-
-        return Ok(result);
-    }
-
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<ActionResult<AuthResponseDto>> Login(LoginRequest request, CancellationToken cancellationToken)

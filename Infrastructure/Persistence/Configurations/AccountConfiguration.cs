@@ -24,6 +24,9 @@ public sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
             .IsRequired();
         builder.Property(account => account.IsFirstAccess)
             .IsRequired();
+        builder.Property(account => account.IsAdmin)
+            .IsRequired()
+            .HasDefaultValue(false);
 
         builder.HasOne(account => account.User)
             .WithOne(user => user.Account)

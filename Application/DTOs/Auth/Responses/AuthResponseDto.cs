@@ -8,5 +8,7 @@ public sealed class AuthResponseDto
 
     public required bool IsFirstAccess { get; init; }
 
+    public required bool IsAdmin { get; init; }
+
     public string? Username { get; init; }
 }

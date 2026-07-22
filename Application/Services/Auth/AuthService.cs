@@ -28,50 +28,6 @@ public sealed class AuthService : IAuthService
         _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public async Task<AuthResponseDto?> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken)
-    {
-        string normalizedEmail = _authDomainService.NormalizeEmail(request.Email);
-        string? normalizedUsername = _authDomainService.NormalizeUsername(request.Username);
-        string fullName = request.FullName.Trim();
-
-        _authDomainService.EnsureRegistration(fullName, normalizedEmail, normalizedUsername, request.Password);
-
-        bool emailTaken = await _authRepository.ExistsWithEmailAsync(normalizedEmail, cancellationToken);
-        if (emailTaken)
-        {
-            return null;
-        }
-
-        if (normalizedUsername != null)
-        {
-            bool usernameTaken = await _authRepository.ExistsWithUsernameAsync(normalizedUsername, cancellationToken);
-            if (usernameTaken)
-            {
-                return null;
-            }
-        }
-
-        Guid userId = Guid.NewGuid();
-        Guid accountId = Guid.NewGuid();
-        User user = new(userId, fullName, normalizedEmail, normalizedUsername, isActive: true);
-        string passwordHash = _passwordHasher.Hash(request.Password);
-        Account account = new(accountId, userId, passwordHash, LoginProvider.Local);
-
-        await _authRepository.AddUserAndAccountAsync(user, account, cancellationToken);
-
-        DateTime utcNow = DateTime.UtcNow;
-        string token = _jwtTokenGenerator.GenerateAccessToken(user.Id, user.Email, utcNow);
-        DateTime expiresAtUtc = _jwtTokenGenerator.GetAccessTokenExpiryUtc(utcNow);
-
-        return new AuthResponseDto
-        {
-            AccessToken = token,
-            ExpiresAtUtc = expiresAtUtc,
-            IsFirstAccess = true,
-            Username = user.Username
-        };
-    }
-
     public async Task<AuthResponseDto?> LoginAsync(LoginRequest request, CancellationToken cancellationToken)
     {
         string normalizedEmail = _authDomainService.NormalizeEmail(request.Email);
@@ -110,7 +66,7 @@ public sealed class AuthService : IAuthService
         DateTime utcNow = DateTime.UtcNow;
         await _authRepository.UpdateAccountLastLoginAsync(account.Id, utcNow, cancellationToken);
 
-        string token = _jwtTokenGenerator.GenerateAccessToken(user.Id, user.Email, utcNow);
+        string token = _jwtTokenGenerator.GenerateAccessToken(user.Id, user.Email, utcNow, account.IsAdmin);
         DateTime expiresAtUtc = _jwtTokenGenerator.GetAccessTokenExpiryUtc(utcNow);
 
         return new AuthResponseDto
@@ -118,6 +74,7 @@ public sealed class AuthService : IAuthService
             AccessToken = token,
             ExpiresAtUtc = expiresAtUtc,
             IsFirstAccess = isFirstAccess,
+            IsAdmin = account.IsAdmin,
             Username = user.Username
         };
     }

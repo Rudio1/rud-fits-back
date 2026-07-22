@@ -23,8 +23,6 @@ public sealed class UserProfileConfiguration : IEntityTypeConfiguration<UserProf
         builder.Property(profile => profile.StartingWeight).HasColumnType("decimal(10,2)");
         builder.Property(profile => profile.DailyRoutineLevel);
         builder.Property(profile => profile.GoalIntensity);
-        builder.Property(profile => profile.FreeScannerUsesCount)
-            .HasDefaultValue(0);
 
         builder.HasOne(profile => profile.User)
             .WithOne(user => user.UserProfile)

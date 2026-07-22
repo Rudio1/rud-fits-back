@@ -33,15 +33,11 @@ public sealed class RudFitAIDbContext : DbContext
 
     public DbSet<MealLogItem> MealLogItems => Set<MealLogItem>();
 
-    public DbSet<SubscriptionPlan> SubscriptionPlans => Set<SubscriptionPlan>();
-
-    public DbSet<UserSubscription> UserSubscriptions => Set<UserSubscription>();
-
-    public DbSet<PaymentEvent> PaymentEvents => Set<PaymentEvent>();
-
     public DbSet<FriendInviteToken> FriendInviteTokens => Set<FriendInviteToken>();
 
     public DbSet<Friendship> Friendships => Set<Friendship>();
+
+    public DbSet<UserInvite> UserInvites => Set<UserInvite>();
 
     public override int SaveChanges()
     {
